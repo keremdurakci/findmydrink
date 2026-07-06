@@ -23,6 +23,40 @@ function byesFor(count: number) {
   return size - count;
 }
 
+const DRAFT_KEY = "bracket_tournament_draft_v1";
+
+type Draft = {
+  info: { name: string; sport: string; location: string; startDate: string; endDate: string; format: Format; legFormat: LegFormat };
+  teamNames: string[];
+  teamMeta: TeamMeta[];
+  seeding: Seeding | null;
+  manualOrder: number[] | null;
+  numGroups: 2 | 4;
+  advancePerGroup: 1 | 2;
+  groups: Group[] | null;
+};
+
+function saveDraft(draft: Draft) {
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  } catch {}
+}
+
+function loadDraft(): Draft | null {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function clearDraft() {
+  try {
+    localStorage.removeItem(DRAFT_KEY);
+  } catch {}
+}
+
 export default function NewTournamentPage() {
   const [session, setSession] = useState<any>(undefined);
   const [authEmail, setAuthEmail] = useState("");
@@ -62,10 +96,39 @@ export default function NewTournamentPage() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
+  // Restores a tournament that was fully set up but paused for sign-in
+  // (see handleSendMagicLink) — the magic link redirect reloads the page,
+  // so this brings the organizer back to the review step with everything
+  // they'd already entered.
+  useEffect(() => {
+    const draft = loadDraft();
+    if (!draft) return;
+    setInfo(draft.info);
+    setTeamNames(draft.teamNames);
+    setTeamMeta(draft.teamMeta);
+    setSeeding(draft.seeding);
+    setManualOrder(draft.manualOrder);
+    setNumGroups(draft.numGroups);
+    setAdvancePerGroup(draft.advancePerGroup);
+    setGroups(draft.groups);
+    setStep(4);
+    clearDraft();
+  }, []);
+
   async function handleSendMagicLink(e: React.FormEvent) {
     e.preventDefault();
-    await supabase.auth.signInWithOtp({ email: authEmail });
-    setAuthSent(true);
+    setError(null);
+    saveDraft({ info, teamNames, teamMeta, seeding, manualOrder, numGroups, advancePerGroup, groups });
+    try {
+      const { error: otpError } = await supabase.auth.signInWithOtp({
+        email: authEmail,
+        options: { emailRedirectTo: window.location.href },
+      });
+      if (otpError) throw otpError;
+      setAuthSent(true);
+    } catch (err: any) {
+      setError(err.message || "Could not send the sign-in link. Please try again.");
+    }
   }
 
   function addTeam() {
@@ -148,6 +211,7 @@ export default function NewTournamentPage() {
   }
 
   async function handleCreate() {
+    if (!session) return;
     setSubmitting(true);
     setError(null);
     try {
@@ -217,33 +281,6 @@ export default function NewTournamentPage() {
 
   if (session === undefined) {
     return <div className="t-wrap" />;
-  }
-
-  if (!session) {
-    return (
-      <div className="t-wrap">
-        <Brand />
-        <div className="card">
-          <h1>Sign in to build a tournament</h1>
-          <p className="hint">We'll email you a sign-in link — no password needed.</p>
-          {authSent ? (
-            <p style={{ color: "var(--green-light)", fontSize: 14 }}>Check your email for a sign-in link.</p>
-          ) : (
-            <form onSubmit={handleSendMagicLink}>
-              <input
-                type="text"
-                placeholder="name@example.com"
-                value={authEmail}
-                onChange={(e) => setAuthEmail(e.target.value)}
-              />
-              <button className="btn btn-primary btn-block" type="submit">
-                Send sign-in link
-              </button>
-            </form>
-          )}
-        </div>
-      </div>
-    );
   }
 
   if (result) {
@@ -600,14 +637,44 @@ export default function NewTournamentPage() {
 
           <p className="note">This will create the tournament and generate the full match schedule.</p>
 
-          <div className="btn-row">
-            <button className="btn btn-ghost" onClick={() => setStep(3)} disabled={submitting}>
-              Back
-            </button>
-            <button className="btn btn-primary" style={{ flex: 2 }} onClick={handleCreate} disabled={submitting}>
-              {submitting ? "Creating…" : "Create tournament"}
-            </button>
-          </div>
+          {session ? (
+            <div className="btn-row">
+              <button className="btn btn-ghost" onClick={() => setStep(3)} disabled={submitting}>
+                Back
+              </button>
+              <button className="btn btn-primary" style={{ flex: 2 }} onClick={handleCreate} disabled={submitting}>
+                {submitting ? "Creating…" : "Create tournament"}
+              </button>
+            </div>
+          ) : (
+            <>
+              <p className="hint" style={{ textAlign: "center", margin: "4px 0 14px" }}>
+                Sign in to save this tournament — we'll email you a link and bring you right back here.
+              </p>
+              {authSent ? (
+                <p style={{ color: "var(--green-light)", fontSize: 14, textAlign: "center" }}>
+                  Check your email for a sign-in link.
+                </p>
+              ) : (
+                <form onSubmit={handleSendMagicLink}>
+                  <input
+                    type="text"
+                    placeholder="name@example.com"
+                    value={authEmail}
+                    onChange={(e) => setAuthEmail(e.target.value)}
+                  />
+                  <button className="btn btn-primary btn-block" type="submit">
+                    Send sign-in link
+                  </button>
+                </form>
+              )}
+              <div className="btn-row">
+                <button className="btn btn-ghost btn-block" onClick={() => setStep(3)}>
+                  Back
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

@@ -67,7 +67,7 @@ export default function TournamentsLandingPage() {
         </p>
         <div className="hero-actions">
           <Link href="/tournaments/new" className="btn btn-primary">
-            Create a free tournament
+            Start building your tournament
           </Link>
           <a href="#how-it-works" className="btn btn-ghost">
             See how it works
