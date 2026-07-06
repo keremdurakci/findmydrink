@@ -1,0 +1,124 @@
+/* Scoped styles for the tournament builder pages, ported from the HTML
+   prototype's dark theme. Not shared with the rest of the (light-themed)
+   findmydrink site. */
+.t-wrap {
+  --bg: #0b1220;
+  --panel: #121a2b;
+  --panel-2: #182238;
+  --amber: #ffb627;
+  --chalk: #f2f1ea;
+  --muted: #7c8aa8;
+  --green: #2f6f5e;
+  --green-light: #5fa98e;
+  --red: #c1443c;
+  --border: #28324a;
+
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 16px 80px;
+  background: var(--bg);
+  color: var(--chalk);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  min-height: 100vh;
+}
+
+.t-wrap .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+.t-wrap .brand-mark {
+  width: 34px; height: 34px; border-radius: 6px; background: var(--amber);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; color: #241a05; font-size: 16px; letter-spacing: -0.5px;
+}
+.t-wrap .brand-name { font-weight: 800; font-size: 15px; letter-spacing: 1.5px; text-transform: uppercase; }
+.t-wrap .brand-sub { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+
+.t-wrap .steps { display: flex; gap: 6px; margin-bottom: 28px; }
+.t-wrap .step-dot { flex: 1; height: 4px; border-radius: 2px; background: var(--border); }
+.t-wrap .step-dot.done { background: var(--amber); }
+.t-wrap .step-dot.active { background: var(--green-light); }
+
+.t-wrap .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 24px; }
+.t-wrap .card + .card { margin-top: 16px; }
+
+.t-wrap h1 { font-size: 22px; font-weight: 800; margin: 0 0 4px; letter-spacing: -0.3px; }
+.t-wrap .step-label { font-size: 11px; color: var(--amber); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; margin: 0 0 6px; }
+.t-wrap p.hint { color: var(--muted); font-size: 13px; margin: 0 0 20px; }
+
+.t-wrap label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.t-wrap input[type="text"], .t-wrap input[type="date"], .t-wrap select {
+  width: 100%; background: var(--panel-2); border: 1px solid var(--border); color: var(--chalk);
+  padding: 11px 12px; border-radius: 7px; font-size: 15px; margin-bottom: 18px;
+}
+.t-wrap input:focus, .t-wrap select:focus { outline: none; border-color: var(--amber); }
+.t-wrap .field-row { display: flex; gap: 12px; }
+.t-wrap .field-row > div { flex: 1; }
+
+.t-wrap .fmt-options { display: grid; gap: 10px; margin-bottom: 18px; }
+.t-wrap .fmt-opt { border: 1px solid var(--border); background: var(--panel-2); border-radius: 8px; padding: 14px; cursor: pointer; text-align: left; color: var(--chalk); }
+.t-wrap .fmt-opt.sel { border-color: var(--amber); background: #241d0c; }
+.t-wrap .fmt-opt b { display: block; font-size: 14px; margin-bottom: 2px; }
+.t-wrap .fmt-opt span { font-size: 12px; color: var(--muted); }
+
+.t-wrap .team-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.t-wrap .team-row { display: flex; align-items: center; gap: 8px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 7px; padding: 8px 10px; }
+.t-wrap .team-num { width: 22px; height: 22px; border-radius: 4px; background: var(--border); color: var(--muted); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.t-wrap .team-row input { margin: 0; flex: 1; padding: 6px 8px; font-size: 14px; }
+.t-wrap .icon-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 4px 6px; line-height: 1; }
+.t-wrap .icon-btn:hover { color: var(--red); }
+.t-wrap .move-btn { color: var(--muted); cursor: pointer; font-size: 12px; padding: 2px 5px; background: none; border: 1px solid var(--border); border-radius: 4px; }
+.t-wrap .move-btn:hover { color: var(--amber); }
+
+.t-wrap .btn { background: transparent; border: 1px solid var(--border); color: var(--chalk); padding: 11px 18px; border-radius: 7px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.t-wrap .btn:hover { border-color: var(--muted); }
+.t-wrap .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.t-wrap .btn-primary { background: var(--amber); border-color: var(--amber); color: #241a05; font-weight: 800; }
+.t-wrap .btn-primary:hover { background: #ffc355; }
+.t-wrap .btn-block { width: 100%; }
+.t-wrap .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+.t-wrap .btn-row .btn { flex: 1; }
+.t-wrap .btn-ghost { border: none; color: var(--muted); background: none; padding: 11px 4px; }
+
+.t-wrap .seed-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
+.t-wrap .seed-card { border: 1px solid var(--border); background: var(--panel-2); border-radius: 8px; padding: 16px; cursor: pointer; text-align: center; }
+.t-wrap .seed-card.sel { border-color: var(--green-light); background: #0f2620; }
+.t-wrap .seed-card b { display: block; font-size: 14px; margin-bottom: 4px; }
+.t-wrap .seed-card span { font-size: 12px; color: var(--muted); }
+
+.t-wrap .count-choice { display: flex; gap: 8px; margin-bottom: 18px; }
+.t-wrap .count-btn { flex: 1; text-align: center; padding: 10px; border: 1px solid var(--border); background: var(--panel-2); border-radius: 7px; cursor: pointer; font-weight: 700; color: var(--chalk); }
+.t-wrap .count-btn.sel { border-color: var(--green-light); background: #0f2620; color: var(--green-light); }
+
+.t-wrap .group-block { border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 12px; background: var(--panel-2); }
+.t-wrap .group-block h3 { margin: 0 0 10px; font-size: 14px; letter-spacing: 0.5px; color: var(--amber); }
+.t-wrap .group-team-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 13px; }
+.t-wrap .group-team-row select { width: auto; margin: 0; padding: 4px 6px; font-size: 12px; flex-shrink: 0; }
+
+.t-wrap .team-customize-btn { background: none; border: none; cursor: pointer; padding: 0; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 0 2px var(--border); }
+.t-wrap .team-panel { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin: 6px 0 4px 30px; }
+.t-wrap .swatch-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 6px; }
+.t-wrap .swatch-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-bottom: 14px; }
+.t-wrap .swatch { aspect-ratio: 1; border-radius: 6px; cursor: pointer; border: 2px solid transparent; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); }
+.t-wrap .swatch.sel { border-color: var(--chalk); }
+.t-wrap .logo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.t-wrap .logo-opt { background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; padding: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.t-wrap .logo-opt.sel { border-color: var(--amber); }
+
+.t-wrap .summary-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.t-wrap .summary-row:last-child { border-bottom: none; }
+.t-wrap .summary-row .k { color: var(--muted); }
+.t-wrap .summary-row .v { font-weight: 600; }
+
+.t-wrap .note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 10px; }
+.t-wrap .error-text { font-size: 13px; color: var(--red); margin: -8px 0 16px; }
+
+.t-wrap .link-box { display: flex; gap: 8px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px; margin-top: 14px; align-items: center; }
+.t-wrap .link-box span { flex: 1; font-size: 13px; color: var(--green-light); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.t-wrap .champ-card { text-align: center; padding: 36px 20px; background: linear-gradient(180deg, var(--panel) 0%, #1a1408 100%); border: 1px solid #7a5a17; border-radius: 10px; }
+.t-wrap .champ-card .trophy { font-size: 38px; margin-bottom: 10px; }
+.t-wrap .champ-card .label { font-size: 11px; color: var(--amber); text-transform: uppercase; letter-spacing: 2px; font-weight: 800; margin-bottom: 8px; }
+.t-wrap .champ-card .name { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+.t-wrap .champ-card .sub { font-size: 13px; color: var(--muted); }
+
+@media (min-width: 480px) {
+  .t-wrap .fmt-options { grid-template-columns: repeat(3, 1fr); }
+}
