@@ -122,3 +122,237 @@
 @media (min-width: 480px) {
   .t-wrap .fmt-options { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* ---------- Landing page ---------- */
+html:has(.t-landing) { scroll-behavior: smooth; }
+
+.t-landing {
+  --bg: #0b1220;
+  --panel: #121a2b;
+  --panel-2: #182238;
+  --amber: #ffb627;
+  --chalk: #f2f1ea;
+  --muted: #7c8aa8;
+  --green: #2f6f5e;
+  --green-light: #5fa98e;
+  --border: #28324a;
+
+  background: var(--bg);
+  color: var(--chalk);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  min-height: 100vh;
+}
+
+.t-landing .t-nav {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+.t-landing .brand { display: flex; align-items: center; gap: 10px; }
+.t-landing .brand-mark {
+  width: 34px; height: 34px; border-radius: 6px; background: var(--amber);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; color: #241a05; font-size: 16px; letter-spacing: -0.5px;
+}
+.t-landing .brand-name { font-weight: 800; font-size: 15px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--chalk); }
+.t-landing .brand-sub { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+
+.t-landing .btn {
+  display: inline-block; background: transparent; border: 1px solid var(--border); color: var(--chalk);
+  padding: 11px 18px; border-radius: 7px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none;
+}
+.t-landing .btn:hover { border-color: var(--muted); }
+.t-landing .btn-primary { background: var(--amber); border-color: var(--amber); color: #241a05; font-weight: 800; }
+.t-landing .btn-primary:hover { background: #ffc355; }
+.t-landing .btn-ghost { border: none; color: var(--muted); background: none; padding: 11px 4px; }
+.t-landing .btn-ghost:hover { color: var(--chalk); }
+
+.t-landing .hero {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 40px 20px 64px;
+  text-align: center;
+}
+
+.t-landing .hero-eyebrow {
+  font-size: 11px;
+  color: var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 800;
+  margin: 0 0 14px;
+}
+
+.t-landing .hero h1 {
+  font-size: 34px;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin: 0 0 16px;
+}
+
+.t-landing .hero p.subtitle {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0 auto 28px;
+  max-width: 560px;
+}
+
+.t-landing .hero-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.t-landing .hero-actions .btn {
+  padding: 13px 22px;
+  font-size: 15px;
+}
+
+.t-landing section {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 48px 20px;
+}
+
+.t-landing .section-title {
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+  margin: 0 0 8px;
+  letter-spacing: -0.3px;
+}
+
+.t-landing .section-hint {
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+  margin: 0 0 32px;
+}
+
+.t-landing .feature-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+
+.t-landing .feature-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 22px;
+}
+
+.t-landing .feature-card .icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  margin-bottom: 14px;
+}
+
+.t-landing .feature-card h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.t-landing .feature-card p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 0;
+}
+
+.t-landing .how-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr;
+  counter-reset: how-step;
+}
+
+.t-landing .how-step {
+  position: relative;
+  padding-left: 44px;
+}
+
+.t-landing .how-step::before {
+  counter-increment: how-step;
+  content: counter(how-step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--panel-2);
+  border: 1px solid var(--amber);
+  color: var(--amber);
+  font-weight: 800;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.t-landing .how-step h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.t-landing .how-step p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.t-landing .pricing-line {
+  text-align: center;
+  padding: 8px 20px 56px;
+}
+
+.t-landing .pricing-line .amount {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--amber);
+}
+
+.t-landing .pricing-line p {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 6px 0 0;
+}
+
+.t-landing footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.t-landing footer .brand-name {
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+@media (min-width: 640px) {
+  .t-landing .hero h1 { font-size: 42px; }
+  .t-landing .feature-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 960px) {
+  .t-landing .feature-grid { grid-template-columns: repeat(4, 1fr); }
+  .t-landing .how-grid { grid-template-columns: repeat(3, 1fr); }
+}
