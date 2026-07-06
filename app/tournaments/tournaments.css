@@ -137,10 +137,22 @@ html:has(.t-landing) { scroll-behavior: smooth; }
   --green-light: #5fa98e;
   --border: #28324a;
 
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: linear-gradient(rgba(11, 18, 32, 0.85), rgba(11, 18, 32, 0.92)), url("/images/sports-fields-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--chalk);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   min-height: 100vh;
+}
+
+@media (max-width: 639px) {
+  .t-landing {
+    /* background-attachment: fixed is unreliable/janky on mobile browsers */
+    background-attachment: scroll;
+  }
 }
 
 .t-landing .t-nav {
