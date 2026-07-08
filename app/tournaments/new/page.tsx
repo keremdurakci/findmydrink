@@ -24,6 +24,17 @@ function byesFor(count: number) {
   return size - count;
 }
 
+// Nominatim's display_name is full street-address detail; the tournament's
+// general location just needs city/region/country, e.g. "Vaughan, ON, Canada".
+function formatCityStateCountry(address?: Record<string, string>): string | null {
+  if (!address) return null;
+  const city = address.city || address.town || address.village || address.suburb || address.municipality || address.county;
+  const iso = address["ISO3166-2-lvl4"];
+  const state = (iso && iso.includes("-") ? iso.split("-")[1] : null) || address.state;
+  const country = address.country;
+  return [city, state, country].filter(Boolean).join(", ") || null;
+}
+
 const DRAFT_KEY = "bracket_tournament_draft_v1";
 
 type Draft = {
@@ -157,10 +168,13 @@ export default function NewTournamentPage() {
     nominatimTimer.current = setTimeout(async () => {
       try {
         const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`
+          `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(query)}&limit=5`
         );
         const results = await res.json();
-        results.forEach((place: { display_name: string }) => registerLocation(place.display_name));
+        results.forEach((place: { address?: Record<string, string> }) => {
+          const formatted = formatCityStateCountry(place.address);
+          if (formatted) registerLocation(formatted);
+        });
       } catch {
         // Offline or request blocked — suggestions silently stay limited to previously entered locations.
       }
@@ -380,7 +394,7 @@ export default function NewTournamentPage() {
           <label>Location</label>
           <input
             type="text"
-            placeholder="e.g. Central Park, New York"
+            placeholder="e.g. Vaughan, ON, Canada"
             value={info.location}
             list="knownLocations"
             onChange={(e) => {

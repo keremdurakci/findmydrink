@@ -1,4 +1,4 @@
-export const SPORTS = ["Soccer", "Basketball", "Volleyball", "Tennis", "Chess", "Other"];
+export const SPORTS = ["Soccer", "Basketball", "Baseball", "Ice Hockey", "Volleyball", "Tennis", "Chess", "Other"];
 
 export const COMMON_COLORS = [
   "#E4402A", "#F2A93B", "#F5D547", "#8FC93A", "#2FA84F", "#1EA692", "#2E86DE", "#1B4F91",
