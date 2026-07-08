@@ -7,7 +7,6 @@ import { autoDistributeGroups, buildBracketRounds, generateMatchDays } from "@/l
 import { SPORTS, defaultTeamColors } from "@/lib/tournamentConstants";
 import TeamLogo from "@/components/tournaments/TeamLogo";
 import TeamCustomizer, { TeamMeta } from "@/components/tournaments/TeamCustomizer";
-import "../tournaments.css";
 
 type Format = "single" | "round" | "groups";
 type LegFormat = "single" | "double";

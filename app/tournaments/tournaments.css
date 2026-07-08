@@ -1,7 +1,12 @@
 /* Scoped styles for the tournament builder pages, ported from the HTML
    prototype's dark theme. Not shared with the rest of the (light-themed)
    findmydrink site. */
-.t-wrap {
+
+/* Applied once by app/tournaments/layout.tsx so every page under
+   /tournaments (landing, wizard, sign-in, future bracket views) gets the
+   same photo background + dark overlay and the same theme variables,
+   without redefining them per page. */
+.t-bg {
   --bg: #0b1220;
   --panel: #121a2b;
   --panel-2: #182238;
@@ -13,12 +18,28 @@
   --red: #c1443c;
   --border: #28324a;
 
+  background-color: var(--bg);
+  background-image: linear-gradient(rgba(11, 18, 32, 0.85), rgba(11, 18, 32, 0.92)), url("/images/sports-fields-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: var(--chalk);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  min-height: 100vh;
+}
+
+@media (max-width: 639px) {
+  .t-bg {
+    /* background-attachment: fixed is unreliable/janky on mobile browsers */
+    background-attachment: scroll;
+  }
+}
+
+.t-wrap {
   max-width: 640px;
   margin: 0 auto;
   padding: 32px 16px 80px;
-  background: var(--bg);
-  color: var(--chalk);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   min-height: 100vh;
 }
 
@@ -28,7 +49,7 @@
   display: flex; align-items: center; justify-content: center;
   font-weight: 800; color: #241a05; font-size: 16px; letter-spacing: -0.5px;
 }
-.t-wrap .brand-name { font-weight: 800; font-size: 15px; letter-spacing: 1.5px; text-transform: uppercase; }
+.t-wrap .brand-name { font-weight: 800; font-size: 15px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--chalk); }
 .t-wrap .brand-sub { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
 
 .t-wrap .steps { display: flex; gap: 6px; margin-bottom: 28px; }
@@ -158,35 +179,6 @@
 
 /* ---------- Landing page ---------- */
 html:has(.t-landing) { scroll-behavior: smooth; }
-
-.t-landing {
-  --bg: #0b1220;
-  --panel: #121a2b;
-  --panel-2: #182238;
-  --amber: #ffb627;
-  --chalk: #f2f1ea;
-  --muted: #7c8aa8;
-  --green: #2f6f5e;
-  --green-light: #5fa98e;
-  --border: #28324a;
-
-  background-color: var(--bg);
-  background-image: linear-gradient(rgba(11, 18, 32, 0.85), rgba(11, 18, 32, 0.92)), url("/images/sports-fields-bg.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  color: var(--chalk);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  min-height: 100vh;
-}
-
-@media (max-width: 639px) {
-  .t-landing {
-    /* background-attachment: fixed is unreliable/janky on mobile browsers */
-    background-attachment: scroll;
-  }
-}
 
 .t-landing .t-nav {
   max-width: 1080px;

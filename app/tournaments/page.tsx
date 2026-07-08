@@ -1,6 +1,5 @@
 import Link from "next/link";
 import SignInButton from "@/components/tournaments/SignInButton";
-import "./tournaments.css";
 
 export const metadata = {
   title: "Bracket — Tournament builder",
