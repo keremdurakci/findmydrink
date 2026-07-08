@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import GoogleButton from "./GoogleButton";
 
 export default function SignInButton() {
   const [session, setSession] = useState<any>(undefined);
@@ -48,19 +49,23 @@ export default function SignInButton() {
             {sent ? (
               <p style={{ color: "var(--green-light)", fontSize: 14 }}>Check your email for a sign-in link.</p>
             ) : (
-              <form onSubmit={handleSubmit}>
-                {error && <p className="error-text">{error}</p>}
-                <input
-                  type="text"
-                  placeholder="name@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoFocus
-                />
-                <button className="btn btn-primary btn-block" type="submit">
-                  Send sign-in link
-                </button>
-              </form>
+              <>
+                <GoogleButton />
+                <p className="t-divider">or continue with email</p>
+                <form onSubmit={handleSubmit}>
+                  {error && <p className="error-text">{error}</p>}
+                  <input
+                    type="text"
+                    placeholder="name@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoFocus
+                  />
+                  <button className="btn btn-primary btn-block" type="submit">
+                    Send sign-in link
+                  </button>
+                </form>
+              </>
             )}
           </div>
         </div>

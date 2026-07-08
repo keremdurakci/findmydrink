@@ -177,6 +177,41 @@
 }
 .t-modal-box input:focus { outline: none; border-color: var(--amber); }
 
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  background: var(--chalk);
+  color: #1f1f1f;
+  border: 1px solid var(--chalk);
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 18px;
+}
+.btn-google:hover { background: #ffffff; }
+
+.t-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 16px;
+}
+.t-divider::before, .t-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
 /* ---------- Landing page ---------- */
 html:has(.t-landing) { scroll-behavior: smooth; }
 

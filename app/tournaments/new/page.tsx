@@ -7,6 +7,7 @@ import { autoDistributeGroups, buildBracketRounds, generateMatchDays } from "@/l
 import { SPORTS, defaultTeamColors } from "@/lib/tournamentConstants";
 import TeamLogo from "@/components/tournaments/TeamLogo";
 import TeamCustomizer, { TeamMeta } from "@/components/tournaments/TeamCustomizer";
+import GoogleButton from "@/components/tournaments/GoogleButton";
 
 type Format = "single" | "round" | "groups";
 type LegFormat = "single" | "double";
@@ -122,10 +123,14 @@ export default function NewTournamentPage() {
     clearDraft();
   }, []);
 
+  function saveCurrentDraft() {
+    saveDraft({ info, teamNames, teamMeta, seeding, manualOrder, numGroups, advancePerGroup, groups, finalOrder });
+  }
+
   async function handleSendMagicLink(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    saveDraft({ info, teamNames, teamMeta, seeding, manualOrder, numGroups, advancePerGroup, groups, finalOrder });
+    saveCurrentDraft();
     try {
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email: authEmail,
@@ -784,17 +789,21 @@ export default function NewTournamentPage() {
                   Check your email for a sign-in link.
                 </p>
               ) : (
-                <form onSubmit={handleSendMagicLink}>
-                  <input
-                    type="text"
-                    placeholder="name@example.com"
-                    value={authEmail}
-                    onChange={(e) => setAuthEmail(e.target.value)}
-                  />
-                  <button className="btn btn-primary btn-block" type="submit">
-                    Send sign-in link
-                  </button>
-                </form>
+                <>
+                  <GoogleButton onBeforeRedirect={saveCurrentDraft} />
+                  <p className="t-divider">or continue with email</p>
+                  <form onSubmit={handleSendMagicLink}>
+                    <input
+                      type="text"
+                      placeholder="name@example.com"
+                      value={authEmail}
+                      onChange={(e) => setAuthEmail(e.target.value)}
+                    />
+                    <button className="btn btn-primary btn-block" type="submit">
+                      Send sign-in link
+                    </button>
+                  </form>
+                </>
               )}
               <div className="btn-row">
                 <button className="btn btn-ghost btn-block" onClick={() => setStep(4)}>
