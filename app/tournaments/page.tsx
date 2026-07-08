@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SignInButton from "@/components/tournaments/SignInButton";
 import "./tournaments.css";
 
 export const metadata = {
@@ -56,6 +57,7 @@ export default function TournamentsLandingPage() {
             <div className="brand-sub">Tournament builder</div>
           </div>
         </div>
+        <SignInButton />
       </div>
 
       <div className="hero">

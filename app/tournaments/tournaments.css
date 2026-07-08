@@ -92,6 +92,12 @@
 .t-wrap .group-team-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 13px; }
 .t-wrap .group-team-row select { width: auto; margin: 0; padding: 4px 6px; font-size: 12px; flex-shrink: 0; }
 
+.t-wrap .fixture-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.t-wrap .fixture-row:last-child { border-bottom: none; }
+.t-wrap .fixture-row .fname { flex: 1; display: flex; align-items: center; gap: 6px; }
+.t-wrap .fixture-row .fname.right-align { text-align: right; justify-content: flex-end; }
+.t-wrap .vs { color: var(--muted); font-size: 11px; padding: 0 2px; flex-shrink: 0; }
+
 .t-wrap .team-customize-btn { background: none; border: none; cursor: pointer; padding: 0; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 0 2px var(--border); }
 .t-wrap .team-panel { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin: 6px 0 4px 30px; }
 .t-wrap .swatch-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 6px; }
@@ -122,6 +128,33 @@
 @media (min-width: 480px) {
   .t-wrap .fmt-options { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* ---------- Shared sign-in modal (used on the landing page) ---------- */
+.t-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 16px;
+}
+.t-modal-box {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  max-width: 360px;
+  width: 100%;
+}
+.t-modal-box .hint { color: var(--muted); font-size: 13px; }
+.t-modal-box .error-text { font-size: 13px; color: var(--red); margin: 0 0 12px; }
+.t-modal-box input[type="text"] {
+  width: 100%; background: var(--panel-2); border: 1px solid var(--border); color: var(--chalk);
+  padding: 11px 12px; border-radius: 7px; font-size: 15px; margin-bottom: 14px;
+}
+.t-modal-box input:focus { outline: none; border-color: var(--amber); }
 
 /* ---------- Landing page ---------- */
 html:has(.t-landing) { scroll-behavior: smooth; }
@@ -159,6 +192,9 @@ html:has(.t-landing) { scroll-behavior: smooth; }
   max-width: 1080px;
   margin: 0 auto;
   padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .t-landing .brand { display: flex; align-items: center; gap: 10px; }

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
-import { autoDistributeGroups } from "@/lib/tournamentLogic";
+import { autoDistributeGroups, buildBracketRounds, generateMatchDays } from "@/lib/tournamentLogic";
 import { SPORTS, defaultTeamColors } from "@/lib/tournamentConstants";
 import TeamLogo from "@/components/tournaments/TeamLogo";
 import TeamCustomizer, { TeamMeta } from "@/components/tournaments/TeamCustomizer";
@@ -34,6 +35,7 @@ type Draft = {
   numGroups: 2 | 4;
   advancePerGroup: 1 | 2;
   groups: Group[] | null;
+  finalOrder: number[] | null;
 };
 
 function saveDraft(draft: Draft) {
@@ -63,7 +65,7 @@ export default function NewTournamentPage() {
   const [authSent, setAuthSent] = useState(false);
 
   const [step, setStep] = useState(1);
-  const totalSteps = 4;
+  const totalSteps = 5;
 
   const [info, setInfo] = useState({
     name: "",
@@ -85,6 +87,11 @@ export default function NewTournamentPage() {
   const [numGroups, setNumGroups] = useState<2 | 4>(2);
   const [advancePerGroup, setAdvancePerGroup] = useState<1 | 2>(2);
   const [groups, setGroups] = useState<Group[] | null>(null);
+
+  const [finalOrder, setFinalOrder] = useState<number[] | null>(null);
+
+  const [knownLocations, setKnownLocations] = useState<string[]>([]);
+  const nominatimTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -111,14 +118,15 @@ export default function NewTournamentPage() {
     setNumGroups(draft.numGroups);
     setAdvancePerGroup(draft.advancePerGroup);
     setGroups(draft.groups);
-    setStep(4);
+    setFinalOrder(draft.finalOrder);
+    setStep(5);
     clearDraft();
   }, []);
 
   async function handleSendMagicLink(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    saveDraft({ info, teamNames, teamMeta, seeding, manualOrder, numGroups, advancePerGroup, groups });
+    saveDraft({ info, teamNames, teamMeta, seeding, manualOrder, numGroups, advancePerGroup, groups, finalOrder });
     try {
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email: authEmail,
@@ -129,6 +137,30 @@ export default function NewTournamentPage() {
     } catch (err: any) {
       setError(err.message || "Could not send the sign-in link. Please try again.");
     }
+  }
+
+  function registerLocation(loc: string) {
+    const trimmed = loc.trim();
+    if (!trimmed) return;
+    setKnownLocations((prev) =>
+      prev.some((l) => l.toLowerCase() === trimmed.toLowerCase()) ? prev : [...prev, trimmed]
+    );
+  }
+
+  function suggestFromNominatim(query: string) {
+    if (nominatimTimer.current) clearTimeout(nominatimTimer.current);
+    if (!query || query.trim().length < 3) return;
+    nominatimTimer.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`
+        );
+        const results = await res.json();
+        results.forEach((place: { display_name: string }) => registerLocation(place.display_name));
+      } catch {
+        // Offline or request blocked — suggestions silently stay limited to previously entered locations.
+      }
+    }, 500);
   }
 
   function addTeam() {
@@ -195,7 +227,7 @@ export default function NewTournamentPage() {
     setManualOrder(next);
   }
 
-  function goToStep4() {
+  function goToPreview() {
     if (info.format === "groups") {
       const tooSmall = groups?.some((g) => g.teamIds.length < advancePerGroup + 1);
       if (tooSmall) {
@@ -207,6 +239,18 @@ export default function NewTournamentPage() {
       return;
     }
     setError(null);
+    if (info.format !== "groups") {
+      let order = teamNames.map((_, i) => i);
+      if (seeding === "random") {
+        for (let i = order.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [order[i], order[j]] = [order[j], order[i]];
+        }
+      } else {
+        order = manualOrder ?? order;
+      }
+      setFinalOrder(order);
+    }
     setStep(4);
   }
 
@@ -223,14 +267,9 @@ export default function NewTournamentPage() {
         const labelByIndex = new Map<number, string>();
         groups?.forEach((g) => g.teamIds.forEach((idx) => labelByIndex.set(idx, g.label)));
         groupLabelFor = (i) => labelByIndex.get(i) ?? null;
-      } else if (seeding === "random") {
-        order = teamNames.map((_, i) => i);
-        for (let i = order.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [order[i], order[j]] = [order[j], order[i]];
-        }
       } else {
-        order = manualOrder ?? teamNames.map((_, i) => i);
+        // Frozen at the preview step so what the organizer saw there is exactly what gets created.
+        order = finalOrder ?? teamNames.map((_, i) => i);
       }
 
       const teams = order.map((i) => ({
@@ -339,8 +378,18 @@ export default function NewTournamentPage() {
             type="text"
             placeholder="e.g. Central Park, New York"
             value={info.location}
-            onChange={(e) => setInfo({ ...info, location: e.target.value })}
+            list="knownLocations"
+            onChange={(e) => {
+              setInfo({ ...info, location: e.target.value });
+              suggestFromNominatim(e.target.value);
+            }}
+            onBlur={(e) => registerLocation(e.target.value)}
           />
+          <datalist id="knownLocations">
+            {knownLocations.map((loc) => (
+              <option key={loc} value={loc} />
+            ))}
+          </datalist>
 
           <div className="field-row">
             <div>
@@ -540,7 +589,7 @@ export default function NewTournamentPage() {
             <button className="btn btn-ghost" onClick={() => setStep(2)}>
               Back
             </button>
-            <button className="btn btn-primary" style={{ flex: 2 }} onClick={goToStep4}>
+            <button className="btn btn-primary" style={{ flex: 2 }} onClick={goToPreview}>
               Continue
             </button>
           </div>
@@ -586,7 +635,7 @@ export default function NewTournamentPage() {
             <button className="btn btn-ghost" onClick={() => setStep(2)}>
               Back
             </button>
-            <button className="btn btn-primary" style={{ flex: 2 }} onClick={goToStep4}>
+            <button className="btn btn-primary" style={{ flex: 2 }} onClick={goToPreview}>
               Continue
             </button>
           </div>
@@ -594,6 +643,86 @@ export default function NewTournamentPage() {
       )}
 
       {step === 4 && (
+        <div className="card">
+          <p className="step-label">Step 4 of {totalSteps}</p>
+          <h1>{info.format === "groups" ? "Group fixtures" : info.format === "round" ? "Match day 1" : "Round 1 matchups"}</h1>
+          <p className="hint">
+            {info.format === "groups"
+              ? "This is what the group stage will look like. Scores are entered once the tournament is created."
+              : info.format === "round"
+              ? "This is the opening match day. The full season schedule unlocks once the tournament is created."
+              : "This is the opening round bracket. A bye means that team advances automatically."}
+          </p>
+
+          {info.format === "groups" &&
+            groups?.map((g) => {
+              const days = generateMatchDays(g.teamIds, info.legFormat === "double");
+              return (
+                <div className="group-block" key={g.label}>
+                  <h3>
+                    Group {g.label} · Match day 1
+                  </h3>
+                  {days[0]?.map((f, i) => matchupRow(i, f.a as number, f.b as number))}
+                  {days.length > 1 && (
+                    <p className="note" style={{ margin: "6px 0 0" }}>
+                      {days.length - 1} more match day{days.length - 1 === 1 ? "" : "s"} once the tournament is created.
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+
+          {info.format === "round" &&
+            finalOrder &&
+            (() => {
+              const days = generateMatchDays(finalOrder, info.legFormat === "double");
+              return (
+                <>
+                  {days[0]?.map((f, i) => matchupRow(i, f.a as number, f.b as number))}
+                  {days.length > 1 && (
+                    <p className="note">
+                      {days.length - 1} more match day{days.length - 1 === 1 ? "" : "s"} once the tournament is created.
+                    </p>
+                  )}
+                </>
+              );
+            })()}
+
+          {info.format === "single" &&
+            finalOrder &&
+            buildBracketRounds(finalOrder)[0]?.map((m, i) =>
+              m.a !== null && m.b !== null ? (
+                matchupRow(i, m.a as number, m.b as number)
+              ) : (
+                <div className="fixture-row" key={i}>
+                  <span className="fname" style={{ flex: 1, display: "flex", alignItems: "center", gap: 6 }}>
+                    <TeamLogo
+                      index={teamMeta[(m.a ?? m.b) as number].logoIndex}
+                      colorA={teamMeta[(m.a ?? m.b) as number].colorA}
+                      colorB={teamMeta[(m.a ?? m.b) as number].colorB}
+                      size={16}
+                    />
+                    {teamNames[(m.a ?? m.b) as number]}
+                  </span>
+                  <span className="vs" style={{ color: "var(--green-light)", fontWeight: 700 }}>
+                    BYE
+                  </span>
+                </div>
+              )
+            )}
+
+          <div className="btn-row">
+            <button className="btn btn-ghost" onClick={() => setStep(3)}>
+              Back
+            </button>
+            <button className="btn btn-primary" style={{ flex: 2 }} onClick={() => setStep(5)}>
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === 5 && (
         <div className="card">
           <p className="step-label">Step {totalSteps} of {totalSteps}</p>
           <h1>Review</h1>
@@ -639,7 +768,7 @@ export default function NewTournamentPage() {
 
           {session ? (
             <div className="btn-row">
-              <button className="btn btn-ghost" onClick={() => setStep(3)} disabled={submitting}>
+              <button className="btn btn-ghost" onClick={() => setStep(4)} disabled={submitting}>
                 Back
               </button>
               <button className="btn btn-primary" style={{ flex: 2 }} onClick={handleCreate} disabled={submitting}>
@@ -669,7 +798,7 @@ export default function NewTournamentPage() {
                 </form>
               )}
               <div className="btn-row">
-                <button className="btn btn-ghost btn-block" onClick={() => setStep(3)}>
+                <button className="btn btn-ghost btn-block" onClick={() => setStep(4)}>
                   Back
                 </button>
               </div>
@@ -679,6 +808,22 @@ export default function NewTournamentPage() {
       )}
     </div>
   );
+
+  function matchupRow(key: number, a: number, b: number) {
+    return (
+      <div className="fixture-row" key={key}>
+        <span className="fname right-align">
+          {teamNames[a]}
+          <TeamLogo index={teamMeta[a].logoIndex} colorA={teamMeta[a].colorA} colorB={teamMeta[a].colorB} size={16} />
+        </span>
+        <span className="vs">vs</span>
+        <span className="fname">
+          <TeamLogo index={teamMeta[b].logoIndex} colorA={teamMeta[b].colorA} colorB={teamMeta[b].colorB} size={16} />
+          {teamNames[b]}
+        </span>
+      </div>
+    );
+  }
 
   function reshuffleGroupsKeepOrder(n: 2 | 4) {
     setGroups(
@@ -692,12 +837,12 @@ export default function NewTournamentPage() {
 
 function Brand() {
   return (
-    <div className="brand">
+    <Link href="/tournaments" className="brand" style={{ textDecoration: "none" }}>
       <div className="brand-mark">B</div>
       <div>
         <div className="brand-name">Bracket</div>
         <div className="brand-sub">Tournament builder</div>
       </div>
-    </div>
+    </Link>
   );
 }
